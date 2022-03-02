@@ -1,0 +1,66 @@
+WindowManager:
+    SplashWindow:
+    LoginWindow:
+    ProfileWindow:
+
+<SplashWindow>:
+    name: "splash"
+    GridLayout:
+        cols:1
+
+        Button:
+            text: "Enter"
+            on_release:
+                app.root.current = "login"
+                root.manager.transition.direction = "left"
+    
+
+<LoginWindow>:
+    name: "login"
+
+    GridLayout:
+        cols:1
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Username: "
+
+            TextInput:
+                id: usnm
+                multiline: False
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Password: "
+
+            TextInput:
+                id: passw
+                multiline: False
+
+        Button:
+            text: "Submit"
+            on_release:
+                root.login_released(usnm, passw)
+                app.root.current = "profile"
+                root.manager.transition.direction = "left"
+
+
+<ProfileWindow>:
+    name: "profile"
+
+    GridLayout:
+        cols:1
+
+        Label:
+            text: "Welcome to your profile!"
+
+
+        Button:
+            text: "Log out"
+            on_release:
+                app.root.current = "login"
+                root.manager.transition.direction = "right"
