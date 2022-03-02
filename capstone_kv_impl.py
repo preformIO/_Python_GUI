@@ -1,3 +1,4 @@
+import string
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -35,7 +36,24 @@ def db_init(db_name = 'profile.db', table_name = "users"):
 
     return
 
-def db_newprofile(
+def db_un_exists(un, db_name = 'profile.db'):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    c.execute(f"""SELECT un 
+        FROM users 
+        WHERE un = '{un}'
+    """)
+    un_result = c.fetchall()
+
+    result = True if len(un_result) else False
+
+    print(f'db_un_exists("{un}") result = "{result}"')
+
+    conn.close()
+
+    return result
+
+def db_profile_new(
     un, 
     pw, 
     fn, 
@@ -69,7 +87,62 @@ def db_newprofile(
 
     return
 
-def db_login(un, pw, db_name = 'profile.db'):
+def db_profile_print(*args, **kwargs):
+    uns = []
+    print_all = False
+    profiles = []
+    if len(args):
+        for arg in args:
+            if type(arg) == str:
+                uns.append(arg)
+            if type(arg) == list and len(arg) and type(arg[0]) == str:
+                for un in arg:
+                    uns.append(un)
+    
+    # print(f'uns = {uns}')
+
+    # handle default kwargs
+    if 'db_name' not in kwargs.keys():
+        db_name = 'profile.db'
+        pass
+    else:
+        db_name = kwargs['db_name']
+        pass
+    if 'all' in kwargs.keys():
+        # print all profiles
+        print_all = kwargs['all']
+        pass
+
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    if print_all:
+        c.execute(f"""SELECT rowid, * 
+            FROM users
+            ORDER BY un
+        """)
+        profiles = c.fetchall()
+        pass
+    else:
+        for un in uns:
+            print(f'un = {un}')
+            c.execute(f"""SELECT rowid, *
+                FROM users 
+                WHERE un = '{un}'
+            """)
+            profiles.append(c.fetchone())
+
+
+    result = True if len(profiles) else False
+
+    print(f'db_profile_print("*{args}, **{kwargs}") profiles =')
+    for profile in profiles:
+        print(profile)
+
+    conn.close()
+
+    return result
+
+def db_un_login(un, pw, db_name = 'profile.db'):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     c.execute(f"""SELECT rowid, first_name 
@@ -83,16 +156,20 @@ def db_login(un, pw, db_name = 'profile.db'):
 
     result = True if len(first_name) else False
 
-    print(f'db_login("{un}", "{pw}") result = "{result}"')
+    print(f'db_un_login("{un}", "{pw}") result = "{result}"')
 
     conn.close()
 
     return result
 
-def db_update_profile(un, **kwargs):
+def db_profile_update(un, **kwargs):
     # handle default kwargs
-    if "db_name" not in kwargs.keys():
+    if 'db_name' not in kwargs.keys():
         db_name = 'profile.db'
+        pass
+    else:
+        db_name = kwargs['db_name']
+        pass
 
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
@@ -102,29 +179,35 @@ def db_update_profile(un, **kwargs):
             WHERE un = '{un}'
         """)
 
-    print(f'db_update_profile({un}, {kwargs}) executed.')
+    print(f'db_profile_update({un}, {kwargs}) executed.')
 
     conn.commit()
     conn.close()
 
     return
 
-def db_un_exists(un, db_name = 'profile.db'):
+def db_profile_delete(un, **kwargs):
+    # handle default kwargs
+    if 'db_name' not in kwargs.keys():
+        db_name = 'profile.db'
+        pass
+    else:
+        db_name = kwargs['db_name']
+        pass
+
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    c.execute(f"""SELECT un 
-        FROM users 
+
+    c.execute(f"""DELETE from users 
         WHERE un = '{un}'
     """)
-    un_result = c.fetchall()
 
-    result = True if len(un_result) else False
+    print(f'db_profile_delete({un}) profile deleted, if it existed in the first place.')
 
-    print(f'db_un_exists("{un}") result = "{result}"')
-
+    conn.commit()
     conn.close()
 
-    return result
+    return
 
 # ----------------------
 # Kivy Window management
@@ -165,7 +248,10 @@ class MyMainApp(App):
 if __name__ == "__main__":
     # Database initialization and tests
     db_init()
-    db_newprofile(
+    db_un_exists('userNameThatDoesNotExist')
+    db_profile_delete('userNameThatDoesNotExist')
+    db_profile_delete('davidDelSol')
+    db_profile_new(
         'davidDelSol',
         'encrypted?',
         'david',
@@ -173,7 +259,7 @@ if __name__ == "__main__":
         'test@preform.io',
         'salsa,extended intelligence,marathon running in a full suit'
     )
-    db_newprofile(
+    db_profile_new(
         'Python733t',
         'encrypted?',
         'Doroteo ',
@@ -181,10 +267,13 @@ if __name__ == "__main__":
         'doabonilla@yahoo.com',
         'work,school,sleep,repeat'
     )
-    db_login('davidDelSol', 'encrypted?')
-    db_update_profile('davidDelSol', pw = 'definitelyNotEncripted!')
-    db_login('davidDelSol', 'definitelyNotEncripted!')
+    db_un_login('davidDelSol', 'encrypted?')
+    db_profile_update('davidDelSol', pw = 'definitelyNotEncripted!')
+    db_un_login('davidDelSol', 'definitelyNotEncripted!')
     db_un_exists('davidDelSol')
+    db_profile_print(all = True)
+    db_profile_print(['Python733t'])
+    db_profile_print('Python733t')
 
     # Run Kivy app
     MyMainApp().run()
