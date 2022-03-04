@@ -1,4 +1,5 @@
-import string
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from xml.etree.ElementInclude import include
 from kivy.app import App
 from kivy.lang import Builder
@@ -39,11 +40,10 @@ class MyMainApp(App):
         return kv
     pass
 
-
 # ----------------------
-# Main application function
+# Main setup function
 # ----------------------
-if __name__ == "__main__":
+def main():
     # # Teo: use these lines to manipulate database
     # Database initialization and tests 
     db.init()
@@ -73,6 +73,13 @@ if __name__ == "__main__":
     db.profile_print(all = True)
     db.profile_print(['Python733t'])
     db.profile_print('Python733t')
+
+# ----------------------
+# Main application function
+# ----------------------
+if __name__ == "__main__":
+    # Run setup
+    main()
 
     # Run Kivy app
     MyMainApp().run()

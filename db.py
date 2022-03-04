@@ -1,8 +1,5 @@
-import string
-# from kivy.app import App
-# from kivy.lang import Builder
-# from kivy.uix.screenmanager import ScreenManager, Screen
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # ---------------------
 # database handling
 # ---------------------
@@ -244,4 +241,5 @@ def main():
 
     pass
 
-main()
+if __name__ == '__main__':
+    main()
