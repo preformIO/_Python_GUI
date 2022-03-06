@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from xml.etree.ElementInclude import include
 from kivy.app import App
