@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------
+# defaults
+# ---------------------
+DB_NAME = 'profile.db'
+T_NAME = 'users'
+# ---------------------
 # database handling
 # ---------------------
 import sqlite3
-# source tutorial: https://www.youtube.com/watch?v=byHcYRpMgI4
-def init(db_name = 'profile.db', table_name = "users"):
+# reference tutorial: https://www.youtube.com/watch?v=byHcYRpMgI4
+def init(db_name = DB_NAME, t_name = T_NAME):
     # connect to database
     # database file is created if it doesn't exist
     conn = sqlite3.connect(db_name)
@@ -15,7 +20,7 @@ def init(db_name = 'profile.db', table_name = "users"):
     # create a cursor
     c = conn.cursor()
     # create a table | DATYPES: null, integer, real, text, blob
-    c.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} (
+    c.execute(f"""CREATE TABLE IF NOT EXISTS {t_name} (
             un text,
             pw text,
             first_name text,
@@ -29,11 +34,11 @@ def init(db_name = 'profile.db', table_name = "users"):
     # close connection (good practice)
     conn.close()
 
-    print(f'Initialized database "{db_name}" and table "{table_name}".')
+    print(f'Initialized database "{db_name}" and table "{t_name}".')
 
     return
 
-def un_exists(un, db_name = 'profile.db'):
+def un_exists(un, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     c.execute(f"""SELECT un 
@@ -56,22 +61,22 @@ def profile_new(
     fn, 
     ln, 
     em, 
-    int,
-    db_name = 'profile.db'
+    ints,
+    db_name = DB_NAME
 ):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
 
     if not un_exists(un):
-        c.execute(f"""INSERT INTO users VALUES (
-                '{un}', 
-                '{pw}', 
-                '{fn}', 
-                '{ln}', 
-                '{em}', 
-                '{int}'
+        c.execute("""INSERT INTO users VALUES (
+                ?, 
+                ?, 
+                ?, 
+                ?, 
+                ?, 
+                ?
             )
-        """)
+        """, (un, pw, fn, ln, em, ints,))
         conn.commit()
         print(f'Created new profile for "{un}".')
         pass
@@ -100,7 +105,7 @@ def profile_print(*args, **kwargs):
 
     # handle default kwargs
     if 'db_name' not in kwargs.keys():
-        db_name = 'profile.db'
+        db_name = DB_NAME
         pass
     else:
         db_name = kwargs['db_name']
@@ -139,7 +144,7 @@ def profile_print(*args, **kwargs):
 
     return result
 
-def un_login(un, pw, db_name = 'profile.db'):
+def un_login(un, pw, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     c.execute(f"""SELECT rowid, first_name 
@@ -162,7 +167,7 @@ def un_login(un, pw, db_name = 'profile.db'):
 def profile_update(un, **kwargs):
     # handle default kwargs
     if 'db_name' not in kwargs.keys():
-        db_name = 'profile.db'
+        db_name = DB_NAME
         pass
     else:
         db_name = kwargs['db_name']
@@ -186,7 +191,7 @@ def profile_update(un, **kwargs):
 def profile_delete(un, **kwargs):
     # handle default kwargs
     if 'db_name' not in kwargs.keys():
-        db_name = 'profile.db'
+        db_name = DB_NAME
         pass
     else:
         db_name = kwargs['db_name']
@@ -211,33 +216,33 @@ def profile_delete(un, **kwargs):
 # ----------------------
 def main():
     # Database initialization and tests
-    # init()
-    # un_exists('userNameThatDoesNotExist')
-    # profile_delete('userNameThatDoesNotExist')
-    # profile_delete('davidDelSol')
-    # profile_new(
-    #     'davidDelSol',
-    #     'encrypted?',
-    #     'david',
-    #     'aloka',
-    #     'test@preform.io',
-    #     'salsa,extended intelligence,marathon running in a full suit'
-    # )
-    # profile_new(
-    #     'Python733t',
-    #     'encrypted?',
-    #     'Doroteo ',
-    #     'Bonilla',
-    #     'doabonilla@yahoo.com',
-    #     'work,school,sleep,repeat'
-    # )
-    # un_login('davidDelSol', 'encrypted?')
-    # profile_update('davidDelSol', pw = 'definitelyNotEncripted!')
-    # un_login('davidDelSol', 'definitelyNotEncripted!')
-    # un_exists('davidDelSol')
-    # profile_print(all = True)
-    # profile_print(['Python733t'])
-    # profile_print('Python733t')
+    init()
+    un_exists('userNameThatDoesNotExist')
+    profile_delete('userNameThatDoesNotExist')
+    profile_delete('davidDelSol')
+    profile_new(
+        'davidDelSol',
+        'encrypted?',
+        'david',
+        'aloka',
+        'test@preform.io',
+        'salsa,extended intelligence,marathon running in a full suit'
+    )
+    profile_new(
+        'Python733t',
+        'encrypted?',
+        'Doroteo ',
+        'Bonilla',
+        'doabonilla@yahoo.com',
+        'work,school,sleep,repeat'
+    )
+    un_login('davidDelSol', 'encrypted?')
+    profile_update('davidDelSol', pw = 'definitelyNotEncripted!')
+    un_login('davidDelSol', 'definitelyNotEncripted!')
+    un_exists('davidDelSol')
+    profile_print(all = True)
+    profile_print(['Python733t'])
+    profile_print('Python733t')
 
     pass
 
