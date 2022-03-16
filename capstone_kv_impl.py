@@ -39,12 +39,14 @@ class LoginWindow(Screen):#
         print(f"password = {passw.text}")
         result = db.un_login(usnm.text,passw.text)
         if result == True:
-
-
+            # set global username
+            global current_user
             current_user = UserData(usnm.text)
+
             # clear text fields
             usnm.text =""
             passw.text =""
+
             #set window to profile
             kivy_app.root.current = "profile"
             self.manager.transition.direction = "left"
@@ -58,18 +60,25 @@ class LoginWindow(Screen):#
     pass
 
 class ProfileWindow(Screen):
-    def display_userdata(self,*args):
-        user_profiles = db.profile_get(current_user.UserName)
-        assert len(user_profiles)
+    def display_userdata(self, usnm, first_name, last_name, email, interests):
 
+        # get user profile
+        user_profiles = db.profile_get(current_user.UserName)
+        assert len(user_profiles) > 0 #assert if user profile does not exist
+
+        # update stored current user data
         user_data = user_profiles[0]
         current_user.update(user_data)
-        for i in range (len(args)):
-            args[i].text = user_data[i + 1]
-            pass
 
+        # update text on-screen
+        usnm.text = current_user.UserName
+        first_name.text = current_user.FirstName
+        last_name.text = current_user.LastName
+        email.text = current_user.Email
+        interests.text = current_user.Interests
 
         pass
+
     pass
 
 class ProfileCreateWindow(Screen):
