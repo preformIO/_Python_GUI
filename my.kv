@@ -3,6 +3,7 @@ WindowManager:
     SplashWindow:
     LoginWindow:
     ProfileWindow:
+    ProfileCreateWindow:
 
 <SplashWindow>:
     name: "splash"
@@ -10,11 +11,16 @@ WindowManager:
         cols:1
 
         Button:
-            text: "Enter"
+            text: "Login"
             on_release:
                 app.root.current = "login"
                 root.manager.transition.direction = "left"
     
+        Button:
+            text: "Create Profile"
+            on_release:
+                app.root.current = "profile_create"
+                root.manager.transition.direction = "left"
 
 <LoginWindow>:
     name: "login"
@@ -46,19 +52,87 @@ WindowManager:
         Button:
             text: "Submit"
             on_release:
-                # root.login_released(usnm, passw)
-                app.root.current = "profile"
-                root.manager.transition.direction = "left"
+                root.login_released(usnm, passw)
+
+
+        Button:
+            text: "Clear"
+            on_release:
+                root.manager.clear_released(usnm,passw)
+
+
+
+        Button:
+            text: "Cancel"
+            on_release:
+                app.root.current = "splash"
+                root.manager.transition.direction = "right"
+
+
 
 
 <ProfileWindow>:
     name: "profile"
+    on_enter: root.display_userdata(usnm,first_name,last_name,email,interests)
 
     GridLayout:
         cols:1
 
         Label:
-            text: "Welcome to your profile!"
+            text: "HELLO Welcome to your profile!"
+
+
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Username: "
+
+            Label:
+                id: usnm
+                text: ""
+
+
+
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "First name: "
+
+            Label:
+                id: first_name
+
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Lastname: "
+
+            Label:
+                id: last_name
+
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Email: "
+
+            Label:
+                id: email
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Interests: "
+
+            Label:
+                id: interests
 
 
         Button:
@@ -66,3 +140,98 @@ WindowManager:
             on_release:
                 app.root.current = "login"
                 root.manager.transition.direction = "right"
+
+
+<ProfileCreateWindow>:
+    name: "profile_create"
+
+    GridLayout:
+        cols:1
+
+        Label:
+            text: "Enter your information to create a profile!"
+
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Username: "
+
+            TextInput:
+                id: usnm
+                multiline: False
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Password: "
+
+            TextInput:
+                id: passw
+                multiline: False
+                password: True
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "First name: "
+
+            TextInput:
+                id: first_name
+                multiline: False
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Lastname: "
+
+            TextInput:
+                id: last_name
+                multiline: False
+
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Email: "
+
+            TextInput:
+                id: email
+                multiline: False
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Interests: "
+
+            TextInput:
+                id: interests
+                multiline: True
+
+
+        Button:
+            text: "Create Profile"
+            on_release:
+                root.create_profile_released(usnm,passw,first_name,last_name,email,interests)
+                app.root.current = "profile"
+                root.manager.transition.direction = "left"
+
+        Button:
+            text: "Clear"
+            on_release:
+                root.manager.clear_released(usnm,passw,first_name,last_name,email,interests)
+
+
+        Button:
+            text: "Cancel"
+            on_release:
+                app.root.current = "splash"
+                root.manager.transition.direction = "right"
+
+

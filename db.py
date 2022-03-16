@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+import string
 # ---------------------
 # defaults
 # ---------------------
@@ -9,7 +9,7 @@ T_NAME = 'users'
 # ---------------------
 import sqlite3
 # reference tutorial: https://www.youtube.com/watch?v=byHcYRpMgI4
-def init(db_name = DB_NAME, t_name = T_NAME):
+def init(db_name = DB_NAME, table_name = T_NAME):
     # connect to database
     # database file is created if it doesn't exist
     conn = sqlite3.connect(db_name)
@@ -19,7 +19,7 @@ def init(db_name = DB_NAME, t_name = T_NAME):
     # create a cursor
     c = conn.cursor()
     # create a table | DATYPES: null, integer, real, text, blob
-    c.execute(f"""CREATE TABLE IF NOT EXISTS {t_name} (
+    c.execute(f"""CREATE TABLE IF NOT EXISTS {table_name} (
             un text,
             pw text,
             first_name text,
@@ -33,7 +33,7 @@ def init(db_name = DB_NAME, t_name = T_NAME):
     # close connection (good practice)
     conn.close()
 
-    print(f'Initialized database "{db_name}" and table "{t_name}".')
+    print(f'Initialized database "{db_name}" and table "{table_name}".')
 
     return
 
@@ -63,6 +63,7 @@ def profile_new(
     ints,
     db_name = DB_NAME
 ):
+    result = False
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
 
@@ -77,6 +78,7 @@ def profile_new(
             )
         """, (un, pw, fn, ln, em, ints,))
         conn.commit()
+        result = True
         print(f'Created new profile for "{un}".')
         pass
     else:
@@ -85,10 +87,10 @@ def profile_new(
 
     conn.close()
 
+    return result
 
-    return
 
-def profile_print(*args, **kwargs):
+def profile_get(*args, **kwargs):
     uns = []
     print_all = False
     profiles = []
@@ -133,7 +135,6 @@ def profile_print(*args, **kwargs):
             profiles.append(c.fetchone())
 
 
-    result = True if len(profiles) else False
 
     print(f'db.profile_print("*{args}, **{kwargs}") profiles =')
     for profile in profiles:
@@ -141,7 +142,7 @@ def profile_print(*args, **kwargs):
 
     conn.close()
 
-    return result
+    return profiles
 
 def un_login(un, pw, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
@@ -239,9 +240,9 @@ def main():
     profile_update('davidDelSol', pw = 'definitelyNotEncripted!')
     un_login('davidDelSol', 'definitelyNotEncripted!')
     un_exists('davidDelSol')
-    profile_print(all = True)
-    profile_print(['Python733t'])
-    profile_print('Python733t')
+    profile_get(all = True)
+    profile_get(['Python733t'])
+    profile_get('Python733t')
 
     pass
 
