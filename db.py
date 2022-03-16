@@ -136,7 +136,7 @@ def profile_get(*args, **kwargs):
 
 
 
-    print(f'db.profile_print("*{args}, **{kwargs}") profiles =')
+    print(f'db.profile_get("*{args}, **{kwargs}") profiles =')
     for profile in profiles:
         print(profile)
 
